@@ -23,6 +23,22 @@ public final class InputValidator {
         return value.trim();
     }
 
+    public static String requireUsername(String username) {
+        String trimmed = requireText(username, "Username");
+        if (trimmed.length() < 3) {
+            throw new IllegalArgumentException("Username must be at least 3 characters long");
+        }
+        return trimmed;
+    }
+
+    public static String requirePassword(String password) {
+        String trimmed = requireText(password, "Password");
+        if (trimmed.length() < 8) {
+            throw new IllegalArgumentException("Password must be at least 8 characters long");
+        }
+        return trimmed;
+    }
+
     public static boolean isValidEmail(String email) {
         return email != null && EMAIL.matcher(email.trim()).matches();
     }
