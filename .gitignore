@@ -28,3 +28,13 @@ bin/
 
 ### Mac OS ###
 .DS_Store
+
+### Maven ###
+target/
+
+# Local MySQL credentials — never commit the real file
+src/resources/database.properties
+src/main/resources/database.properties
+
+# Temporary PDF renders used while reading the assignment
+.pdf_pages/
