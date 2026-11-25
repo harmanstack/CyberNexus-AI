@@ -14,9 +14,16 @@ import java.time.Duration;
  * template so the app still works when the API is missing (Evaluation 2).
  */
 public class AIService {
-    private final HttpClient httpClient = HttpClient.newBuilder()
-            .connectTimeout(Duration.ofSeconds(3))
-            .build();
+    private HttpClient httpClient;
+
+    private synchronized HttpClient getHttpClient() {
+        if (httpClient == null) {
+            httpClient = HttpClient.newBuilder()
+                    .connectTimeout(Duration.ofSeconds(3))
+                    .build();
+        }
+        return httpClient;
+    }
 
     public String explain(ScanResult result) {
         String remote = tryRemoteExplanation(result);
@@ -30,7 +37,7 @@ public class AIService {
         String endpoint;
         try {
             endpoint = DBConnection.getAiApiUrl();
-        } catch (RuntimeException ignored) {
+        } catch (Throwable ignored) {
             return null;
         }
         if (endpoint == null || endpoint.isBlank()) {
@@ -44,7 +51,7 @@ public class AIService {
                     .header("Content-Type", "application/json")
                     .POST(HttpRequest.BodyPublishers.ofString(body))
                     .build();
-            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            HttpResponse<String> response = getHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
             if (response.statusCode() >= 200 && response.statusCode() < 300
                     && response.body() != null && !response.body().isBlank()) {
                 return "AI API: " + response.body();
